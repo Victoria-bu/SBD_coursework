@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head><title>Звіт по жилплощі</title></head>
+<body>
+  <h2>Довідка щодо житлової площі</h2>
+  
+  <div>
+    <a href="{{ url_for('tenants') }}">📋 Мешканці</a> |
+    <a href="{{ url_for('reports') }}">📊 Звіти</a> |
+    <a href="{{ url_for('housing_report') }}">📄 Довідки</a> |
+    <a href="{{ url_for('district_report') }}">🏘️ Документ ЖЕКу</a> |
+    {% if current_user.role == 'admin' %}
+    <a href="{{ url_for('add_tenant') }}">➕ Додати мешканця</a> |
+    {% endif %}
+    <a href="{{ url_for('logout') }}">🚪 Вийти</a>
+  </div>
+
+  <h3>Статистика по вулицях</h3>
+  <table border="1">
+    <tr>
+      <th>Вулиця</th>
+      <th>Кількість квартир</th>
+      <th>Загальна площа</th>
+      <th>Середня площа</th>
+      <th>Кількість мешканців</th>
+    </tr>
+    {% for stat in stats %}
+    <tr>
+      <td>{{ stat.street_name }}</td>
+      <td>{{ stat.apartment_count }}</td>
+      <td>{{ "%.2f"|format(stat.total_area or 0) }} м²</td>
+      <td>{{ "%.2f"|format(stat.avg_area or 0) }} м²</td>
+      <td>{{ stat.tenant_count }}</td>
+    </tr>
+    {% endfor %}
+  </table>
+</body>
+</html>

@@ -1,0 +1,186 @@
+/* static/style.css */
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0;
+    padding: 20px;
+    background-color: #f5f5f5;
+    color: #333;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    background: white;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.header {
+    background: linear-gradient(135deg, #2c3e50, #3498db);
+    color: white;
+    padding: 20px;
+    border-radius: 8px;
+    margin-bottom: 30px;
+}
+
+.header h1 {
+    margin: 0;
+    font-size: 28px;
+}
+
+.navbar {
+    background: #34495e;
+    padding: 15px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+}
+
+.navbar a {
+    color: white;
+    text-decoration: none;
+    margin: 0 15px;
+    padding: 8px 16px;
+    border-radius: 5px;
+    transition: background 0.3s;
+}
+
+.navbar a:hover {
+    background: rgba(255,255,255,0.2);
+}
+
+.street-section {
+    margin-bottom: 40px;
+    border: 2px solid #3498db;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.street-header {
+    background: #3498db;
+    color: white;
+    padding: 15px 20px;
+    margin: 0;
+    font-size: 20px;
+}
+
+.building-section {
+    margin: 20px;
+    padding: 15px;
+    background: #ecf0f1;
+    border-radius: 8px;
+}
+
+.building-header {
+    color: #2c3e50;
+    margin-bottom: 15px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #bdc3c7;
+}
+
+.apartments-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+}
+
+.apartments-table th {
+    background: #34495e;
+    color: white;
+    padding: 12px;
+    text-align: left;
+    font-weight: 600;
+}
+
+.apartments-table td {
+    padding: 12px;
+    border-bottom: 1px solid #ddd;
+}
+
+.apartments-table tr:nth-child(even) {
+    background: #f8f9fa;
+}
+
+.apartments-table tr:hover {
+    background: #e3f2fd;
+}
+
+.status-occupied {
+    color: #27ae60;
+    font-weight: 600;
+}
+
+.status-vacant {
+    color: #e74c3c;
+    font-style: italic;
+}
+
+.area-badge {
+    background: #3498db;
+    color: white;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+}
+
+.rooms-badge {
+    background: #9b59b6;
+    color: white;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+}
+
+.ownership-badge {
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.ownership-private {
+    background: #27ae60;
+    color: white;
+}
+
+.ownership-municipal {
+    background: #e67e22;
+    color: white;
+}
+
+.ownership-rental {
+    background: #3498db;
+    color: white;
+}
+
+.ownership-cooperative {
+    background: #9b59b6;
+    color: white;
+}
+
+.sort-controls {
+    background: #ecf0f1;
+    padding: 15px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+}
+
+.sort-controls label {
+    font-weight: 600;
+    margin-right: 10px;
+}
+
+.sort-controls select {
+    padding: 8px;
+    border: 1px solid #bdc3c7;
+    border-radius: 4px;
+    margin-right: 20px;
+}
+
+.user-info {
+    float: right;
+    background: rgba(255,255,255,0.2);
+    padding: 5px 15px;
+    border-radius: 20px;
+    font-size: 14px;
+}

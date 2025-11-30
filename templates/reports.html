@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head><title>Звіти</title></head>
+<body>
+  <h2>Формування довідок за вулицями</h2>
+  
+  <div>
+    <a href="{{ url_for('tenants') }}">📋 Мешканці</a> |
+    <a href="{{ url_for('reports') }}">📊 Звіти</a> |
+    {% if current_user.role == 'admin' %}
+    <a href="{{ url_for('add_tenant') }}">➕ Додати мешканця</a> |
+    <a href="{{ url_for('add_address') }}">🏠 Додати адресу</a> |
+    {% endif %}
+    <a href="{{ url_for('logout') }}">🚪 Вийти ({{ current_user.username }})</a>
+  </div>
+
+  <form method="get">
+    Виберіть вулицю:
+    <select name="street_id">
+      <option value="">--Оберіть вулицю--</option>
+      {% for street in streets %}
+        <option value="{{ street.id }}" {% if street.id == selected %}selected{% endif %}>{{ street.name }}</option>
+      {% endfor %}
+    </select>
+    <button type="submit">Показати</button>
+  </form>
+
+  {% if apartments %}
+    <h3>Квартири на {{ apartments[0].building.street.name }}</h3>
+    <table border="1">
+      <tr>
+        <th>Будинок</th>
+        <th>Квартира</th>
+        <th>Площа</th>
+        <th>Кімнат</th>
+        <th>Тип власності</th>
+      </tr>
+      {% for apt in apartments %}
+      <tr>
+        <td>{{ apt.building.number }}</td>
+        <td>{{ apt.number }}</td>
+        <td>{{ apt.area }} м²</td>
+        <td>{{ apt.rooms or '-' }}</td>
+        <td>{{ apt.ownership_type }}</td>
+      </tr>
+      {% endfor %}
+    </table>
+  {% endif %}
+</body>
+</html>

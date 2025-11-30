@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head><title>Додати квартиронаймача</title></head>
+<body>
+  <h2>Додати квартиронаймача</h2>
+  
+  <form method="post">
+    <h3>Особиста інформація:</h3>
+    ПІБ: <input type="text" name="full_name" required><br>
+    Серія паспорта: <input type="text" name="passport_series"><br>
+    Номер паспорта: <input type="text" name="passport_number" required><br>
+    Телефон: <input type="tel" name="phone"><br>
+    Дата реєстрації: <input type="date" name="registration_date" required><br>
+    
+    <h3>Адреса:</h3>
+    Квартира:
+    <select name="apartment_id" required>
+      <option value="">--Оберіть квартиру--</option>
+      {% for apt in apartments %}
+      <option value="{{ apt.id }}">
+        Вул. {{ apt.building.street.name }}, буд. {{ apt.building.number }}, кв. {{ apt.number }} ({{ apt.area }}м², {{ apt.rooms }} кімн.)
+      </option>
+      {% endfor %}
+    </select><br>
+    
+    <button type="submit">Зберегти</button>
+  </form>
+  
+  <p><a href="{{ url_for('add_address') }}">➕ Додати нову адресу</a></p>
+  <a href="{{ url_for('tenants') }}">← Назад до списку</a>
+  
+  {% with messages = get_flashed_messages() %}
+  {% if messages %}
+    <ul>
+    {% for msg in messages %}
+      <li>{{ msg }}</li>
+    {% endfor %}
+    </ul>
+  {% endif %}
+  {% endwith %}
+</body>
+</html>

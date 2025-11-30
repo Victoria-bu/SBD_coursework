@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head><title>Мешканці</title></head>
+<body>
+  <h2>Квартиронаймачі</h2>
+  
+  <div>
+    <a href="{{ url_for('tenants') }}">📋 Мешканці</a> |
+    {% if current_user.role == 'admin' %}
+    <a href="{{ url_for('district_report') }}">🏘️ Документ ЖЕКу</a> |
+    <a href="{{ url_for('add_tenant') }}">➕ Додати мешканця</a> |
+    <a href="{{ url_for('add_address') }}">🏠 Додати адресу</a> |
+    {% endif %}
+    <a href="{{ url_for('logout') }}">🚪 Вийти ({{ current_user.username }})</a>
+  </div>
+
+  <table border="1">
+    <tr>
+      <th>ПІБ</th>
+      <th>Паспорт</th>
+      <th>Телефон</th>
+      <th>Дата реєстрації</th>
+      <th>Адреса</th>
+      <th>Площа</th>
+      <th>Кімнат</th>
+      <th>Тип власності</th>
+      <th>Довідка</th>
+    </tr>
+    {% for t in tenants %}
+    <tr>
+      <td>{{ t.full_name }}</td>
+      <td>{% if t.passport_series %}{{ t.passport_series }}{% endif %} №{{ t.passport_number }}</td>
+      <td>{{ t.phone or '-' }}</td>
+      <td>{{ t.registration_date }}</td>
+      <td>Вул. {{ t.street_name }}, буд. {{ t.building_number }}, кв. {{ t.apartment_number }}</td>
+      <td>{{ t.area }} м²</td>
+      <td>{{ t.rooms or '-' }}</td>
+      <td>{{ t.ownership_type }}</td>
+      <td>
+        <a href="{{ url_for('tenant_certificate', tenant_id=t.id) }}">📄 Довідка</a>
+      </td>
+    </tr>
+    {% endfor %}
+  </table>
+</body>
+</html>
