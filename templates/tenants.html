@@ -1,30 +1,30 @@
 <!DOCTYPE html>
 <html>
-<head><title>Мешканці</title></head>
+<head><title>Tenants</title></head>
 <body>
-  <h2>Квартиронаймачі</h2>
+  <h2>Tenants</h2>
   
   <div>
-    <a href="{{ url_for('tenants') }}">📋 Мешканці</a> |
+    <a href="{{ url_for('tenants.tenants_list') }}">📋 Tenants</a> |
     {% if current_user.role == 'admin' %}
-    <a href="{{ url_for('district_report') }}">🏘️ Документ ЖЕКу</a> |
-    <a href="{{ url_for('add_tenant') }}">➕ Додати мешканця</a> |
-    <a href="{{ url_for('add_address') }}">🏠 Додати адресу</a> |
+    <a href="{{ url_for('documents.district_report') }}">🏘️ Housing Department Report</a> |
+    <a href="{{ url_for('tenants.add_tenant') }}">➕ Add Tenant</a> |
+    <a href="{{ url_for('addresses.add_address') }}">🏠 Add Address</a> |
     {% endif %}
-    <a href="{{ url_for('logout') }}">🚪 Вийти ({{ current_user.username }})</a>
+    <a href="{{ url_for('auth.logout') }}">🚪 Logout ({{ current_user.username }})</a>
   </div>
 
   <table border="1">
     <tr>
-      <th>ПІБ</th>
-      <th>Паспорт</th>
-      <th>Телефон</th>
-      <th>Дата реєстрації</th>
-      <th>Адреса</th>
-      <th>Площа</th>
-      <th>Кімнат</th>
-      <th>Тип власності</th>
-      <th>Довідка</th>
+      <th>Full Name</th>
+      <th>Passport</th>
+      <th>Phone</th>
+      <th>Registration Date</th>
+      <th>Address</th>
+      <th>Area</th>
+      <th>Rooms</th>
+      <th>Ownership Type</th>
+      <th>Certificate</th>
     </tr>
     {% for t in tenants %}
     <tr>
@@ -32,13 +32,17 @@
       <td>{% if t.passport_series %}{{ t.passport_series }}{% endif %} №{{ t.passport_number }}</td>
       <td>{{ t.phone or '-' }}</td>
       <td>{{ t.registration_date }}</td>
-      <td>Вул. {{ t.street_name }}, буд. {{ t.building_number }}, кв. {{ t.apartment_number }}</td>
-      <td>{{ t.area }} м²</td>
-      <td>{{ t.rooms or '-' }}</td>
-      <td>{{ t.ownership_type }}</td>
       <td>
-        <a href="{{ url_for('tenant_certificate', tenant_id=t.id) }}">📄 Довідка</a>
+        St. {{ t.apartment.building.street.name }},
+        Bldg. {{ t.apartment.building.number }},
+        Apt. {{ t.apartment.number }}
       </td>
+      <td>{{ t.apartment.area }} m²</td>
+      <td>{{ t.apartment.rooms or '-' }}</td>
+      <td>{{ t.apartment.ownership_type }}</td>
+      <td>
+        <a href="{{ url_for('documents.tenant_certificate', tenant_id=t.id) }}">📄 Certificate</a>
+      </td>      
     </tr>
     {% endfor %}
   </table>

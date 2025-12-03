@@ -1,45 +1,45 @@
-<!DOCTYPE html>
+<!DOCTYPE html> 
 <html>
-<head><title>Звіти</title></head>
+<head><title>Reports</title></head>
 <body>
-  <h2>Формування довідок за вулицями</h2>
+  <h2>Generate Reports by Streets</h2>
   
   <div>
-    <a href="{{ url_for('tenants') }}">📋 Мешканці</a> |
-    <a href="{{ url_for('reports') }}">📊 Звіти</a> |
+    <a href="{{ url_for('tenants.tenants_list') }}">📋 Tenants</a> |
+    {# <a href="{{ url_for('reports') }}">📊 Reports</a> | #}
     {% if current_user.role == 'admin' %}
-    <a href="{{ url_for('add_tenant') }}">➕ Додати мешканця</a> |
-    <a href="{{ url_for('add_address') }}">🏠 Додати адресу</a> |
+    <a href="{{ url_for('tenants.add_tenant') }}">➕ Add Tenant</a> |
+    <a href="{{ url_for('addresses.add_address') }}">🏠 Add Address</a>|
     {% endif %}
-    <a href="{{ url_for('logout') }}">🚪 Вийти ({{ current_user.username }})</a>
+    <a href="{{ url_for('auth.logout') }}">🚪 Logout ({{ current_user.username }})</a>
   </div>
 
   <form method="get">
-    Виберіть вулицю:
+    Select Street:
     <select name="street_id">
-      <option value="">--Оберіть вулицю--</option>
+      <option value="">--Select a street--</option>
       {% for street in streets %}
         <option value="{{ street.id }}" {% if street.id == selected %}selected{% endif %}>{{ street.name }}</option>
       {% endfor %}
     </select>
-    <button type="submit">Показати</button>
+    <button type="submit">Show</button>
   </form>
 
   {% if apartments %}
-    <h3>Квартири на {{ apartments[0].building.street.name }}</h3>
+    <h3>Apartments on {{ apartments[0].building.street.name }}</h3>
     <table border="1">
       <tr>
-        <th>Будинок</th>
-        <th>Квартира</th>
-        <th>Площа</th>
-        <th>Кімнат</th>
-        <th>Тип власності</th>
+        <th>Building</th>
+        <th>Apartment</th>
+        <th>Area</th>
+        <th>Rooms</th>
+        <th>Ownership Type</th>
       </tr>
       {% for apt in apartments %}
       <tr>
         <td>{{ apt.building.number }}</td>
         <td>{{ apt.number }}</td>
-        <td>{{ apt.area }} м²</td>
+        <td>{{ apt.area }} m²</td>
         <td>{{ apt.rooms or '-' }}</td>
         <td>{{ apt.ownership_type }}</td>
       </tr>

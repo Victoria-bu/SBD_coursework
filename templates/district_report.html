@@ -1,81 +1,91 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Документ ЖЕКу</title>
+    <title>District Office Document</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
     <div class="container">
         <div class="header">
-            <h1>📋 Документ житлово-експлуатаційного відділу</h1>
-            <p>Загальна кількість мешканців: {{ streets_data | sum(attribute='total_tenants') }}</p>
+            <h1>📋 District Housing Maintenance Department Document</h1>
+            <p>Total number of tenants: {{ streets_data | sum(attribute='total_tenants') }}</p>
         </div>
 
         <div class="navbar">
-            <a href="{{ url_for('tenants') }}">📋 Мешканці</a>
-            <a href="{{ url_for('district_report') }}">🏘️ Документ ЖЕКу</a>
-            <a href="{{ url_for('add_tenant') }}">➕ Додати мешканця</a>
-            <a href="{{ url_for('add_address') }}">🏠 Додати адресу</a>
+            <a href="{{ url_for('tenants.tenants_list') }}">📋 Tenants</a>
+            <a href="{{ url_for('documents.district_report') }}">🏘️ District Office Document</a>
+            <a href="{{ url_for('tenants.add_tenant') }}">➕ Add Tenant</a>
+            <a href="{{ url_for('addresses.add_address') }}">🏠 Add Address</a>
             <span class="user-info">🚪 {{ current_user.username }}</span>
-            <a href="{{ url_for('logout') }}" style="float: right;">Вийти</a>
+            <a href="{{ url_for('auth.logout') }}" style="float: right;">Logout</a>
         </div>
 
         <div class="sort-controls">
-            <label>Сортування:</label>
+            <label>Sort:</label>
             <select onchange="sortStreets(this.value)">
-                <option value="name_asc">Вулиці А-Я</option>
-                <option value="name_desc">Вулиці Я-А</option>
-                <option value="tenants_asc">Менше мешканців</option>
-                <option value="tenants_desc">Більше мешканців</option>
+                <option value="name_asc">Streets A–Z</option>
+                <option value="name_desc">Streets Z–A</option>
+                <option value="tenants_asc">Fewer tenants</option>
+                <option value="tenants_desc">More tenants</option>
             </select>
-            
-            <label>Фільтр:</label>
+
+            <label>Filter:</label>
             <select onchange="filterOccupancy(this.value)">
-                <option value="all">Всі квартири</option>
-                <option value="occupied">Заселені</option>
-                <option value="vacant">Вільні</option>
+                <option value="all">All apartments</option>
+                <option value="occupied">Occupied</option>
+                <option value="vacant">Vacant</option>
             </select>
         </div>
 
         {% for street_info in streets_data %}
-        <div class="street-section" data-street="{{ street_info.street.name }}" data-tenants="{{ street_info.total_tenants }}">
+        <div class="street-section" 
+             data-street="{{ street_info.street.name }}" 
+             data-tenants="{{ street_info.total_tenants }}">
+
             <h2 class="street-header">
-                📍 ВУЛИЦЯ: {{ street_info.street.name }}
-                <small style="float: right; font-size: 14px;">Мешканців: {{ street_info.total_tenants }}</small>
+                📍 STREET: {{ street_info.street.name }}
+                <small style="float: right; font-size: 14px;">
+                    Tenants: {{ street_info.total_tenants }}
+                </small>
             </h2>
-            
+
             {% for building_info in street_info.buildings %}
             <div class="building-section">
-                <h3 class="building-header">🏠 Будинок №{{ building_info.building.number }}</h3>
-                
+                <h3 class="building-header">
+                    🏠 Building №{{ building_info.building.number }}
+                </h3>
+
                 <table class="apartments-table">
                     <thead>
                         <tr>
-                            <th>Квартира</th>
-                            <th>Площа</th>
-                            <th>Кімнат</th>
-                            <th>Тип власності</th>
-                            <th>Мешканці</th>
+                            <th>Apartment</th>
+                            <th>Area</th>
+                            <th>Rooms</th>
+                            <th>Ownership Type</th>
+                            <th>Tenants</th>
                         </tr>
                     </thead>
                     <tbody>
                         {% for apartment_info in building_info.apartments %}
                         <tr class="apartment-row" data-occupied="{{ apartment_info.tenants | length > 0 }}">
                             <td><strong>{{ apartment_info.apartment.number }}</strong></td>
+
                             <td>
-                                <span class="area-badge">{{ apartment_info.apartment.area }} м²</span>
+                                <span class="area-badge">{{ apartment_info.apartment.area }} m²</span>
                             </td>
+
                             <td>
                                 {% if apartment_info.apartment.rooms %}
-                                <span class="rooms-badge">{{ apartment_info.apartment.rooms }} кім.</span>
+                                <span class="rooms-badge">{{ apartment_info.apartment.rooms }} rooms</span>
                                 {% else %}
                                 <span>-</span>
                                 {% endif %}
                             </td>
+
                             <td>
                                 {% set ownership_class = {
                                     'приватна': 'ownership-private',
-                                    'комунальна': 'ownership-municipal', 
+                                    'комунальна': 'ownership-municipal',
                                     'орендна': 'ownership-rental',
                                     'кооперативна': 'ownership-cooperative'
                                 } %}
@@ -83,11 +93,12 @@
                                     {{ apartment_info.apartment.ownership_type }}
                                 </span>
                             </td>
+
                             <td>
                                 {% for tenant in apartment_info.tenants %}
                                     <div class="status-occupied">{{ tenant.full_name }}</div>
                                 {% else %}
-                                    <div class="status-vacant">Вільна</div>
+                                    <div class="status-vacant">Vacant</div>
                                 {% endfor %}
                             </td>
                         </tr>
@@ -104,14 +115,14 @@
         function sortStreets(sortType) {
             const streetsContainer = document.querySelector('.container');
             const streetSections = Array.from(document.querySelectorAll('.street-section'));
-            
+
             streetSections.sort((a, b) => {
                 const streetA = a.getAttribute('data-street');
                 const streetB = b.getAttribute('data-street');
                 const tenantsA = parseInt(a.getAttribute('data-tenants'));
                 const tenantsB = parseInt(b.getAttribute('data-tenants'));
-                
-                switch(sortType) {
+
+                switch (sortType) {
                     case 'name_asc':
                         return streetA.localeCompare(streetB);
                     case 'name_desc':
@@ -124,21 +135,18 @@
                         return 0;
                 }
             });
-            
-            // Видаляємо всі секції
+
             streetSections.forEach(section => section.remove());
-            
-            // Додаємо відсортовані секції
             streetSections.forEach(section => streetsContainer.appendChild(section));
         }
-        
+
         function filterOccupancy(filterType) {
             const rows = document.querySelectorAll('.apartment-row');
-            
+
             rows.forEach(row => {
                 const isOccupied = row.getAttribute('data-occupied') === 'true';
-                
-                switch(filterType) {
+
+                switch (filterType) {
                     case 'all':
                         row.style.display = '';
                         break;
@@ -151,8 +159,8 @@
                 }
             });
         }
-        
-        // Автоматичне сортування при завантаженні
+
+        // Auto-sort on load
         document.addEventListener('DOMContentLoaded', function() {
             sortStreets('name_asc');
         });
