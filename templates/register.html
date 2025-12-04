@@ -1,30 +1,30 @@
 <!DOCTYPE html>
 <html>
-<head><title>Реєстрація</title></head>
+<head><title>Registration</title></head>
 <body>
-  <h2>Реєстрація</h2>
+  <h2>Registration</h2>
   <form method="post">
-    <h3>Дані для входу:</h3>
-    <input type="text" name="username" placeholder="Ім'я користувача" required><br>
-    <input type="password" name="password" placeholder="Пароль" required><br>
+    <h3>Login information:</h3>
+    <input type="text" name="username" placeholder="Username" required><br>
+    <input type="password" name="password" placeholder="Password" required><br>
     
-    <h3>Ваші дані як мешканця:</h3>
-    <input type="text" name="full_name" placeholder="Ваше ПІБ (як у базі даних)" required><br>
-    <small>Введіть точно так, як записано в системі</small><br><br>
+    <h3>Your tenant information:</h3>
+    <input type="text" name="full_name" placeholder="Full Name (as in the database)" required><br>
+    <small>Enter exactly as recorded in the system</small><br><br>
     
     <!-- Тільки адміни можуть вибирати роль -->
     {% if current_user.is_authenticated and current_user.role == 'admin' %}
     <select name="role">
-      <option value="user">Користувач</option>
-      <option value="admin">Адміністратор</option>
+      <option value="user">User</option>
+      <option value="admin">Administrator</option>
     </select><br>
     {% else %}
     <input type="hidden" name="role" value="user">
     {% endif %}
     
-    <button type="submit">Зареєструватися</button>
+    <button type="submit">Register</button>
   </form>
-  <p>Вже є акаунт? <a href="{{ url_for('login') }}">Увійти</a></p>
+  <p>Already have an account? <a href="{{ url_for('auth.login') }}">Login</a></p>
   {% with messages = get_flashed_messages() %}
   {% if messages %}
     <ul>

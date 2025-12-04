@@ -1,35 +1,35 @@
 <!DOCTYPE html>
 <html>
-<head><title>Звіт по жилплощі</title></head>
+<head><title>Housing Report</title></head>
 <body>
-  <h2>Довідка щодо житлової площі</h2>
+  <h2>Housing Area Certificate</h2>
   
   <div>
-    <a href="{{ url_for('tenants') }}">📋 Мешканці</a> |
-    <a href="{{ url_for('reports') }}">📊 Звіти</a> |
-    <a href="{{ url_for('housing_report') }}">📄 Довідки</a> |
-    <a href="{{ url_for('district_report') }}">🏘️ Документ ЖЕКу</a> |
+    <a href="{{ url_for('tenants.tenants_list') }}">📋 Tenants</a> |
+    {# <a href="{{ url_for('reports') }}">📊 Reports</a> | #}
+    <a href="{{ url_for('housing_report') }}">📄 Certificates</a> |
+    <a href="{{ url_for('documents.district_report') }}">🏘️ District Office Document</a> |
     {% if current_user.role == 'admin' %}
-    <a href="{{ url_for('add_tenant') }}">➕ Додати мешканця</a> |
+    <a href="{{ url_for('tenants.add_tenant') }}">➕ Add Tenant</a>
     {% endif %}
-    <a href="{{ url_for('logout') }}">🚪 Вийти</a>
+    <a href="{{ url_for('auth.logout') }}">🚪 Logout</a>
   </div>
 
-  <h3>Статистика по вулицях</h3>
+  <h3>Street Statistics</h3>
   <table border="1">
     <tr>
-      <th>Вулиця</th>
-      <th>Кількість квартир</th>
-      <th>Загальна площа</th>
-      <th>Середня площа</th>
-      <th>Кількість мешканців</th>
+      <th>Street</th>
+      <th>Number of Apartments</th>
+      <th>Total Area</th>
+      <th>Average Area</th>
+      <th>Number of Tenants</th>
     </tr>
     {% for stat in stats %}
     <tr>
       <td>{{ stat.street_name }}</td>
       <td>{{ stat.apartment_count }}</td>
-      <td>{{ "%.2f"|format(stat.total_area or 0) }} м²</td>
-      <td>{{ "%.2f"|format(stat.avg_area or 0) }} м²</td>
+      <td>{{ "%.2f"|format(stat.total_area or 0) }} m²</td>
+      <td>{{ "%.2f"|format(stat.avg_area or 0) }} m²</td>
       <td>{{ stat.tenant_count }}</td>
     </tr>
     {% endfor %}

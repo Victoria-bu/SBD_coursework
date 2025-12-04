@@ -1,33 +1,33 @@
 <!DOCTYPE html>
 <html>
-<head><title>Додати квартиронаймача</title></head>
+<head><title>Add Tenant</title></head>
 <body>
-  <h2>Додати квартиронаймача</h2>
+  <h2>Add Tenant</h2>
   
   <form method="post">
-    <h3>Особиста інформація:</h3>
-    ПІБ: <input type="text" name="full_name" required><br>
-    Серія паспорта: <input type="text" name="passport_series"><br>
-    Номер паспорта: <input type="text" name="passport_number" required><br>
-    Телефон: <input type="tel" name="phone"><br>
-    Дата реєстрації: <input type="date" name="registration_date" required><br>
+    <h3>Personal Information:</h3>
+    Full Name: <input type="text" name="full_name" required><br>
+    Passport Series: <input type="text" name="passport_series"><br>
+    Passport Number: <input type="text" name="passport_number" required><br>
+    Phone: <input type="tel" name="phone"><br>
+    Registration Date: <input type="date" name="registration_date" required><br>
     
-    <h3>Адреса:</h3>
-    Квартира:
+    <h3>Address:</h3>
+    Apartment:
     <select name="apartment_id" required>
-      <option value="">--Оберіть квартиру--</option>
+      <option value="">--Select Apartment--</option>
       {% for apt in apartments %}
       <option value="{{ apt.id }}">
-        Вул. {{ apt.building.street.name }}, буд. {{ apt.building.number }}, кв. {{ apt.number }} ({{ apt.area }}м², {{ apt.rooms }} кімн.)
+        St. {{ apt.building.street.name }}, Bldg. {{ apt.building.number }}, Apt. {{ apt.number }} ({{ apt.area }} m², {{ apt.rooms }} rooms)
       </option>
       {% endfor %}
     </select><br>
     
-    <button type="submit">Зберегти</button>
+    <button type="submit">Save</button>
   </form>
   
-  <p><a href="{{ url_for('add_address') }}">➕ Додати нову адресу</a></p>
-  <a href="{{ url_for('tenants') }}">← Назад до списку</a>
+  <p><a href="{{ url_for('addresses.add_address') }}">🏠 Add Address</a></p>
+  <a href="{{ url_for('tenants.tenants_list') }}">📋 Tenants</a> 
   
   {% with messages = get_flashed_messages() %}
   {% if messages %}

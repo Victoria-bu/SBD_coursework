@@ -1,42 +1,41 @@
 <!DOCTYPE html>
 <html>
-<head><title>Додати адресу</title></head>
+<head><title>Add Address</title></head>
 <body>
-  <h2>Додати нову адресу</h2>
+  <h2>Add a New Address</h2>
   
   <div>
-    <a href="{{ url_for('tenants') }}">📋 Мешканці</a> |
-    <a href="{{ url_for('reports') }}">📊 Звіти</a> |
+    <a href="{{ url_for('tenants.tenants_list') }}">📋 Tenants</a> |
     {% if current_user.role == 'admin' %}
-    <a href="{{ url_for('add_tenant') }}">➕ Додати мешканця</a> |
-    <a href="{{ url_for('add_address') }}">🏠 Додати адресу</a> |
+    <a href="{{ url_for('tenants.add_tenant') }}">➕ Add Tenant</a> |
+    <a href="{{ url_for('addresses.add_address') }}">🏠 Add Address</a> |
     {% endif %}
-    <a href="{{ url_for('logout') }}">🚪 Вийти ({{ current_user.username }})</a>
+    <a href="{{ url_for('auth.logout') }}">🚪 Logout ({{ current_user.username }})</a>
   </div>
   
   <form method="post">
-    <h3>Адреса:</h3>
-    Вулиця: <input type="text" name="street_name" placeholder="Назва вулиці" required><br>
-    Номер будинку: <input type="text" name="building_number" placeholder="Номер будинку" required><br>
-    Номер квартири: <input type="text" name="apartment_number" placeholder="Номер квартири" required><br>
+    <h3>Address:</h3>
+    Street: <input type="text" name="street_name" placeholder="Street name" required><br>
+    Building Number: <input type="text" name="building_number" placeholder="Building number" required><br>
+    Apartment Number: <input type="text" name="apartment_number" placeholder="Apartment number" required><br>
     
-    <h3>Характеристики квартири:</h3>
-    Площа: <input type="number" name="area" step="0.01" placeholder="Площа (м²)" required> м²<br>
-    Кількість кімнат: <input type="number" name="rooms" placeholder="Кількість кімнат"><br>
-    Тип власності: 
+    <h3>Apartment Details:</h3>
+    Area: <input type="number" name="area" step="0.01" placeholder="Area (m²)" required> m²<br>
+    Number of Rooms: <input type="number" name="rooms" placeholder="Number of rooms"><br>
+    Ownership Type:
     <select name="ownership_type" required>
-      <option value="">--Оберіть тип власності--</option>
-      <option value="приватна">Приватна</option>
-      <option value="комунальна">Комунальна</option>
-      <option value="орендна">Орендна</option>
-      <option value="кооперативна">Кооперативна</option>
+      <option value="">--Select ownership type--</option>
+      <option value="private">Private</option>
+      <option value="municipal">Municipal</option>
+      <option value="rented">Rented</option>
+      <option value="cooperative">Cooperative</option>
     </select><br>
     
     <br>
-    <button type="submit">Додати адресу</button>
+    <button type="submit">Add Address</button>
   </form>
   
-  <a href="{{ url_for('add_tenant') }}">← Назад до додавання мешканця</a>
+  <a href="{{ url_for('tenants.add_tenant') }}">← Back to Adding Tenant</a>
   
   {% with messages = get_flashed_messages() %}
   {% if messages %}
