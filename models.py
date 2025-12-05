@@ -1,7 +1,7 @@
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import UserMixin
 from datetime import datetime
-from werkzeug.security import check_password_hash
+from werkzeug.security import check_password_hash, generate_password_hash  
 
 db = SQLAlchemy()
 
@@ -10,13 +10,22 @@ class Street(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), nullable=False, unique=True)
 
+    """Кількість будинків на вулиці"""
+    @property
+    def building_count(self):
+        return len(self.buildings)
+
 class Building(db.Model):
     __tablename__ = 'buildings'
     id = db.Column(db.Integer, primary_key=True)
     street_id = db.Column(db.Integer, db.ForeignKey('streets.id'), nullable=False)
     number = db.Column(db.String(10), nullable=False)  # Номер будинку: "25", "14А"
-    
     street = db.relationship('Street', backref='buildings')
+
+    """Кількість квартир у будинку"""
+    @property
+    def apartment_count(self):
+        return len(self.apartments)
 
 class Apartment(db.Model):
     __tablename__ = 'apartments'
@@ -26,8 +35,11 @@ class Apartment(db.Model):
     area = db.Column(db.Numeric(8, 2), nullable=False)  # Площа: 65.50
     rooms = db.Column(db.Integer)  # Кількість кімнат: 3
     ownership_type = db.Column(db.String(50), nullable=False)  # "приватна", "комунальна", "орендна"
-    
     building = db.relationship('Building', backref='apartments')
+    """Чи заселена квартира"""
+    @property
+    def is_occupied(self):
+        return len(self.tenants) > 0
 
 class Person(db.Model):
     __abstract__ = True

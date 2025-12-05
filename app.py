@@ -8,7 +8,6 @@ from sqlalchemy import text
 # Create Flask app
 app = Flask(__name__)
 app.config.from_object(Config)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql+psycopg2://postgres:1234@localhost:5432/postgres'
 
 # Initialize SQLAlchemy
 db.init_app(app)
@@ -77,6 +76,7 @@ def register():
 
     return render_template('register.html')
 
+
 def init_db():
     """Check connection + create tables + add test data"""
     try:
@@ -122,6 +122,7 @@ def init_db():
 
     except Exception as e:
         print(f"Error initializing database: {e}")
+
 
 if __name__ == '__main__':
     init_db()

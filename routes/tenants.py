@@ -116,12 +116,19 @@ def edit_tenant(tenant_id):
             db.session.rollback()
             flash(f"Error: {e}")
 
-    # For GET — load list of apartments
-    apartments = Apartment.query.join(Building).join(Street).add_columns(
-        Apartment.id,
-        Apartment.number.label('apartment_number'),
-        Building.number.label('building_number'),
-        Street.name.label('street_name')
+    # отримати всі квартири з попередньо завантаженими зв'язками
+    apartments = Apartment.query.options(
+        db.joinedload(Apartment.building).joinedload(Building.street)
     ).all()
 
-    return render_template("tenant_form.html", tenant=tenant, apartments=apartments)
+    # Трансформуємо в потрібний формат
+    apartment_list = []
+    for apt in apartments:
+        apartment_list.append({
+            'id': apt.id,
+            'apartment_number': apt.number,
+            'building_number': apt.building.number if apt.building else '',
+            'street_name': apt.building.street.name if apt.building and apt.building.street else ''
+        })
+
+    return render_template("tenant_form.html", tenant=tenant, apartments=apartment_list)

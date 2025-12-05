@@ -1,60 +1,367 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>District Office Document</title>
+    <title>District Report</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        /* Стилі для дизайну панелі управління */
+        .control-panel {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            border: 1px solid #eaeaea;
+        }
+        
+        .control-section {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        
+        .section-divider {
+            height: 1px;
+            background: linear-gradient(to right, transparent, #e1bee7, transparent);
+            margin: 10px 0;
+            border: none;
+        }
+        
+        .compact-group {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+        
+        .compact-label {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #4a148c;
+            min-width: 120px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .icon-tiny {
+            width: 14px;
+            height: 14px;
+            fill: currentColor;
+        }
+        
+        /* Стиль для перемикачів сортування */
+        .sort-toggle {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: white;
+            border: 1px solid #e1bee7;
+            border-radius: 6px;
+            padding: 8px 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-decoration: none;
+            color: #4a148c;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+        
+        .sort-toggle:hover {
+            background: #f3e5f5;
+            border-color: #ce93d8;
+            transform: translateY(-1px);
+        }
+        
+        .sort-toggle.active {
+            background: #ce93d8;
+            color: white;
+            border-color: #ce93d8;
+            box-shadow: 0 2px 4px rgba(206, 147, 216, 0.2);
+        }
+        
+        .sort-toggle.active:hover {
+            background: #ba68c8;
+            border-color: #ba68c8;
+        }
+        
+        /* Сегментований перемикач для фільтра */
+        .segmented-switch {
+            display: inline-flex;
+            background: #f8f5ff;
+            border-radius: 8px;
+            padding: 3px;
+            border: 1px solid #e1bee7;
+        }
+        
+        .segment-btn {
+            padding: 6px 12px;
+            border: none;
+            background: transparent;
+            color: #6a1b9a;
+            font-size: 0.85rem;
+            cursor: pointer;
+            border-radius: 6px;
+            transition: all 0.2s ease;
+            font-weight: 500;
+            white-space: nowrap;
+        }
+        
+        .segment-btn:hover {
+            background: rgba(206, 147, 216, 0.1);
+        }
+        
+        .segment-btn.active {
+            background: white;
+            color: #4a148c;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        
+        /* Адаптивність */
+        @media (max-width: 768px) {
+            .compact-group {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+            
+            .compact-label {
+                min-width: auto;
+            }
+            
+            .segmented-switch {
+                width: 100%;
+            }
+            
+            .segment-btn {
+                flex: 1;
+                text-align: center;
+            }
+        }
+    </style>
+    <script>
+        // Функція для підрахунку статистики
+        function calculateStatistics() {
+            let totalBuildings = 0;
+            let totalApartments = 0;
+            let totalTenants = 0;
+            
+            document.querySelectorAll('.building-section').forEach(building => {
+                totalBuildings++;
+                
+                const apartments = building.querySelectorAll('.apartments-table tbody tr');
+                totalApartments += apartments.length;
+                
+                apartments.forEach(apartment => {
+                    const tenantElements = apartment.querySelectorAll('.tenant-name');
+                    totalTenants += tenantElements.length;
+                });
+            });
+            
+            document.getElementById('total-buildings').textContent = totalBuildings;
+            document.getElementById('total-apartments').textContent = totalApartments;
+            document.getElementById('total-tenants').textContent = totalTenants;
+        }
+        
+        // Виконуємо підрахунок при завантаженні сторінки
+        document.addEventListener('DOMContentLoaded', function() {
+            calculateStatistics();
+            
+            const segmentButtons = document.querySelectorAll('.segment-btn');
+            
+            segmentButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    segmentButtons.forEach(btn => btn.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    const viewType = this.dataset.view;
+                    filterStreets(viewType);
+                });
+            });
+            
+            function filterStreets(viewType) {
+                const streetBlocks = document.querySelectorAll('.street-block');
+                
+                streetBlocks.forEach(street => {
+                    const tenants = parseInt(street.dataset.tenants) || 0;
+                    
+                    let shouldShow = true;
+                    
+                    switch(viewType) {
+                        case 'with-tenants':
+                            shouldShow = tenants > 0;
+                            break;
+                        case 'empty':
+                            shouldShow = tenants === 0;
+                            break;
+                        case 'all':
+                        default:
+                            shouldShow = true;
+                    }
+                    
+                    if (shouldShow) {
+                        street.style.display = 'block';
+                    } else {
+                        street.style.display = 'none';
+                    }
+                });
+            }
+        });
+    </script>
+
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <h1>📋 District Housing Maintenance Department Document</h1>
-            <p>Total number of tenants: {{ streets_data | sum(attribute='total_tenants') }}</p>
+    <!-- ХЕДЕР -->
+    <div class="top-navbar">
+        <div class="navbar-container">
+            <div class="navbar-content">
+                <div class="navbar-brand">
+                    <svg class="icon" viewBox="0 0 24 24">
+                        <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/>
+                    </svg>
+                    Housing Fund
+                </div>
+                
+                <div class="navbar-links">
+                    <ul class="navbar-nav">
+                        <li>
+                            <a href="{{ url_for('tenants.tenants_list') }}" {% if request.endpoint == 'tenants.tenants_list' %}class="active"{% endif %}>
+                                Tenants
+                            </a>
+                        </li>
+                        {% if current_user.role == 'admin' %}
+                        <li>
+                            <a href="{{ url_for('documents.district_report') }}" {% if request.endpoint == 'documents.district_report' %}class="active"{% endif %}>
+                                District Report
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{{ url_for('tenants.add_tenant') }}" {% if request.endpoint == 'tenants.add_tenant' %}class="active"{% endif %}>
+                                <svg class="icon-small" viewBox="0 0 24 24">
+                                    <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
+                                </svg>
+                                Add Tenant
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{{ url_for('addresses.add_address') }}" {% if request.endpoint == 'addresses.add_address' %}class="active"{% endif %}>
+                                <svg class="icon-small" viewBox="0 0 24 24">
+                                    <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
+                                </svg>
+                                Add Address
+                            </a>
+                        </li>
+                        {% endif %}
+                    </ul>
+                </div>
+                
+                <div class="navbar-user">
+                    <span class="user-info">
+                        <svg class="icon-small" viewBox="0 0 24 24">
+                            <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+                        </svg>
+                        {{ current_user.username }}
+                    </span>
+                    <div class="navbar-logout">
+                        <a href="{{ url_for('auth.logout') }}">
+                            <svg class="icon-small" viewBox="0 0 24 24">
+                                <path d="M10.09 15.59L11.5 17l5-5-5-5-1.41 1.41L12.67 11H3v2h9.67l-2.58 2.59zM19 3H5c-1.11 0-2 .9-2 2v4h2V5h14v14H5v-4H3v4c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2z"/>
+                            </svg>
+                            Logout
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- КОНТЕЙНЕР З КОНТЕНТОМ -->
+    <div class="container district-report">
+            <h1>
+                District Report
+            </h1>
+
+        <!-- панель управління -->
+        <div class="control-panel" style="padding: 12px 15px;">
+            <div style="display: flex; align-items: center; gap: 20px; flex-wrap: wrap;">
+                <!-- Сортування вулиць -->
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <span style="font-size: 0.85rem; font-weight: 600; color: #4a148c; white-space: nowrap;">
+                        <svg class="icon-tiny" viewBox="0 0 24 24" style="vertical-align: middle; margin-right: 5px;">
+                            <path d="M3 18h6v-2H3v2zM3 6v2h18V6H3zm0 7h12v-2H3v2z"/>
+                        </svg>
+                        Sort:
+                    </span>
+                    <div style="display: flex; gap: 6px;">
+                        <a href="{{ url_for('documents.district_report', sort_street='name_asc') }}" 
+                        class="sort-toggle {% if request.args.get('sort_street') in ['name_asc', None] %}active{% endif %}" 
+                        style="padding: 6px 10px; font-size: 0.8rem;">
+                            A-Z
+                        </a>
+                        <a href="{{ url_for('documents.district_report', sort_street='name_desc') }}" 
+                        class="sort-toggle {% if request.args.get('sort_street') == 'name_desc' %}active{% endif %}" 
+                        style="padding: 6px 10px; font-size: 0.8rem;">
+                            Z-A
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Фільтр зайнятості -->
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <span style="font-size: 0.85rem; font-weight: 600; color: #4a148c; white-space: nowrap;">
+                        <svg class="icon-tiny" viewBox="0 0 24 24" style="vertical-align: middle; margin-right: 5px;">
+                            <path d="M10 18h4v-2h-4v2zM3 6v2h18V6H3zm3 7h12v-2H6v2z"/>
+                        </svg>
+                        Filter:
+                    </span>
+                    <div class="segmented-switch" style="padding: 2px;">
+                        <button class="segment-btn" data-view="all" style="padding: 5px 10px; font-size: 0.8rem;">All</button>
+                        <button class="segment-btn" data-view="with-tenants" style="padding: 5px 10px; font-size: 0.8rem;">With Tenants</button>
+                        <button class="segment-btn" data-view="empty" style="padding: 5px 10px; font-size: 0.8rem;">Empty</button>
+                    </div>
+                </div>
+            </div>
         </div>
 
-        <div class="navbar">
-            <a href="{{ url_for('tenants.tenants_list') }}">📋 Tenants</a>
-            <a href="{{ url_for('documents.district_report') }}">🏘️ District Office Document</a>
-            <a href="{{ url_for('tenants.add_tenant') }}">➕ Add Tenant</a>
-            <a href="{{ url_for('addresses.add_address') }}">🏠 Add Address</a>
-            <span class="user-info">🚪 {{ current_user.username }}</span>
-            <a href="{{ url_for('auth.logout') }}" style="float: right;">Logout</a>
-        </div>
-
-        <div class="sort-controls">
-            <label>Sort:</label>
-            <select onchange="sortStreets(this.value)">
-                <option value="name_asc">Streets A–Z</option>
-                <option value="name_desc">Streets Z–A</option>
-                <option value="tenants_asc">Fewer tenants</option>
-                <option value="tenants_desc">More tenants</option>
-            </select>
-
-            <label>Filter:</label>
-            <select onchange="filterOccupancy(this.value)">
-                <option value="all">All apartments</option>
-                <option value="occupied">Occupied</option>
-                <option value="vacant">Vacant</option>
-            </select>
-        </div>
-
-        {% for street_info in streets_data %}
-        <div class="street-section" 
-             data-street="{{ street_info.street.name }}" 
-             data-tenants="{{ street_info.total_tenants }}">
-
-            <h2 class="street-header">
-                📍 STREET: {{ street_info.street.name }}
-                <small style="float: right; font-size: 14px;">
-                    Tenants: {{ street_info.total_tenants }}
-                </small>
-            </h2>
-
-            {% for building_info in street_info.buildings %}
-            <div class="building-section">
-                <h3 class="building-header">
-                    🏠 Building №{{ building_info.building.number }}
-                </h3>
-
+        <!-- Вміст зі списком вулиць -->
+        {% for street_data in streets_data %}
+        <div class="street-block" data-street="{{ street_data.street.name|lower }}" 
+             data-tenants="{{ street_data.total_tenants or 0 }}"
+             data-buildings="{{ street_data.buildings|length }}">
+            <div class="street-header">
+                <div class="street-name">{{ street_data.street.name }}</div>
+                <div class="street-info">
+                    {% if street_data.total_tenants and street_data.total_tenants > 0 %}
+                    <div class="tenant-count">
+                        {{ street_data.total_tenants }} tenant{% if street_data.total_tenants != 1 %}s{% endif %}
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            
+            {% for building_data in street_data.buildings %}
+            <div class="building-section" data-apartments="{{ building_data.apartments|length if building_data.apartments else 0 }}"
+                 data-occupied="{% if building_data.apartments %}{% set occupied = namespace(count=0) %}{% for apartment in building_data.apartments %}{% if apartment.tenants and apartment.tenants|length > 0 %}{% set occupied.count = occupied.count + 1 %}{% endif %}{% endfor %}{{ occupied.count }}{% else %}0{% endif %}">
+                <div class="building-header">
+                    <div class="building-title">
+                        <span class="building-number">Building №{{ building_data.building.number }}</span>
+                    </div>
+                    
+                    <!-- Статистика будівлі -->
+                    <div class="building-stats">
+                        <div class="stat-item">
+                            <svg class="icon-small" viewBox="0 0 24 24">
+                                <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-2 10H7v-2h10v2z"/>
+                            </svg>
+                            <span class="stat-label">Apartments:</span>
+                            <span class="stat-value">
+                                {{ building_data.apartments|length if building_data.apartments else 0 }}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                
+                {% if building_data.apartments and building_data.apartments|length > 0 %}
                 <table class="apartments-table">
                     <thead>
                         <tr>
@@ -66,104 +373,80 @@
                         </tr>
                     </thead>
                     <tbody>
-                        {% for apartment_info in building_info.apartments %}
-                        <tr class="apartment-row" data-occupied="{{ apartment_info.tenants | length > 0 }}">
-                            <td><strong>{{ apartment_info.apartment.number }}</strong></td>
-
+                        {% for apartment_data in building_data.apartments %}
+                        <tr data-occupied="{% if apartment_data.tenants and apartment_data.tenants|length > 0 %}yes{% else %}no{% endif %}">
+                            <td class="apartment-number">{{ apartment_data.apartment.number }}</td>
                             <td>
-                                <span class="area-badge">{{ apartment_info.apartment.area }} m²</span>
+                                <div class="apartment-info">
+                                    <span class="area-info">{{ apartment_data.apartment.area }} m²</span>
+                                </div>
                             </td>
-
                             <td>
-                                {% if apartment_info.apartment.rooms %}
-                                <span class="rooms-badge">{{ apartment_info.apartment.rooms }} rooms</span>
-                                {% else %}
-                                <span>-</span>
-                                {% endif %}
+                                <div class="apartment-info">
+                                    <span class="rooms-info">{{ apartment_data.apartment.rooms }} room{% if apartment_data.apartment.rooms != 1 %}s{% endif %}</span>
+                                </div>
                             </td>
-
                             <td>
-                                {% set ownership_class = {
-                                    'приватна': 'ownership-private',
-                                    'комунальна': 'ownership-municipal',
-                                    'орендна': 'ownership-rental',
-                                    'кооперативна': 'ownership-cooperative'
-                                } %}
-                                <span class="ownership-badge {{ ownership_class.get(apartment_info.apartment.ownership_type, '') }}">
-                                    {{ apartment_info.apartment.ownership_type }}
+                                <span class="ownership-info ownership-{{ apartment_data.apartment.ownership_type|replace(' ', '-')|lower }}">
+                                    {{ apartment_data.apartment.ownership_type }}
                                 </span>
                             </td>
-
                             <td>
-                                {% for tenant in apartment_info.tenants %}
-                                    <div class="status-occupied">{{ tenant.full_name }}</div>
+                                {% if apartment_data.tenants and apartment_data.tenants|length > 0 %}
+                                    {% for tenant in apartment_data.tenants %}
+                                    <div class="tenant-name">{{ tenant.full_name }}</div>
+                                    {% endfor %}
                                 {% else %}
-                                    <div class="status-vacant">Vacant</div>
-                                {% endfor %}
+                                    <span class="empty-apartment">No tenants</span>
+                                {% endif %}
                             </td>
                         </tr>
                         {% endfor %}
                     </tbody>
                 </table>
+                {% else %}
+                <p class="no-tenants">No apartments in this building</p>
+                {% endif %}
             </div>
             {% endfor %}
         </div>
         {% endfor %}
+
+        <!-- Загальна статистика району -->
+        <div class="district-summary">
+            <div class="summary-header">
+                <svg class="icon" viewBox="0 0 24 24" style="vertical-align: middle; margin-right: 10px;">
+                    <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/>
+                </svg>
+                District Summary
+            </div>
+            <div class="summary-stats">
+                <div class="summary-item">
+                    <div class="summary-label">
+                        Total Streets
+                    </div>
+                    <div class="summary-value">{{ streets_data|length }}</div>
+                </div>
+                <div class="summary-item">
+                    <div class="summary-label">
+                        Total Buildings
+                    </div>
+                    <div class="summary-value" id="total-buildings">0</div>
+                </div>
+                <div class="summary-item">
+                    <div class="summary-label">
+                        Total Apartments
+                    </div>
+                    <div class="summary-value" id="total-apartments">0</div>
+                </div>
+                <div class="summary-item">
+                    <div class="summary-label">
+                        Total Tenants
+                    </div>
+                    <div class="summary-value" id="total-tenants">0</div>
+                </div>
+            </div>
+        </div>
     </div>
-
-    <script>
-        function sortStreets(sortType) {
-            const streetsContainer = document.querySelector('.container');
-            const streetSections = Array.from(document.querySelectorAll('.street-section'));
-
-            streetSections.sort((a, b) => {
-                const streetA = a.getAttribute('data-street');
-                const streetB = b.getAttribute('data-street');
-                const tenantsA = parseInt(a.getAttribute('data-tenants'));
-                const tenantsB = parseInt(b.getAttribute('data-tenants'));
-
-                switch (sortType) {
-                    case 'name_asc':
-                        return streetA.localeCompare(streetB);
-                    case 'name_desc':
-                        return streetB.localeCompare(streetA);
-                    case 'tenants_asc':
-                        return tenantsA - tenantsB;
-                    case 'tenants_desc':
-                        return tenantsB - tenantsA;
-                    default:
-                        return 0;
-                }
-            });
-
-            streetSections.forEach(section => section.remove());
-            streetSections.forEach(section => streetsContainer.appendChild(section));
-        }
-
-        function filterOccupancy(filterType) {
-            const rows = document.querySelectorAll('.apartment-row');
-
-            rows.forEach(row => {
-                const isOccupied = row.getAttribute('data-occupied') === 'true';
-
-                switch (filterType) {
-                    case 'all':
-                        row.style.display = '';
-                        break;
-                    case 'occupied':
-                        row.style.display = isOccupied ? '' : 'none';
-                        break;
-                    case 'vacant':
-                        row.style.display = isOccupied ? 'none' : '';
-                        break;
-                }
-            });
-        }
-
-        // Auto-sort on load
-        document.addEventListener('DOMContentLoaded', function() {
-            sortStreets('name_asc');
-        });
-    </script>
 </body>
 </html>

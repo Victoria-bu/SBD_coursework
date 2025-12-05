@@ -1,50 +1,153 @@
 <!DOCTYPE html>
 <html>
-<head><title>Tenants</title></head>
+<head>
+    <title>Tenants</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
 <body>
-  <h2>Tenants</h2>
-  
-  <div>
-    <a href="{{ url_for('tenants.tenants_list') }}">📋 Tenants</a> |
-    {% if current_user.role == 'admin' %}
-    <a href="{{ url_for('documents.district_report') }}">🏘️ Housing Department Report</a> |
-    <a href="{{ url_for('tenants.add_tenant') }}">➕ Add Tenant</a> |
-    <a href="{{ url_for('addresses.add_address') }}">🏠 Add Address</a> |
-    {% endif %}
-    <a href="{{ url_for('auth.logout') }}">🚪 Logout ({{ current_user.username }})</a>
-  </div>
+  <div class="top-navbar">
+        <div class="navbar-container">
+            <div class="navbar-content">
+                <div class="navbar-brand">
+                    <svg class="icon" viewBox="0 0 24 24">
+                        <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/>
+                    </svg>
+                    Housing Management
+                </div>
+                
+                <div class="navbar-links">
+                    <ul class="navbar-nav">
+                        <li>
+                            <a href="{{ url_for('tenants.tenants_list') }}" {% if request.endpoint == 'tenants.tenants_list' %}class="active"{% endif %}>
+                                Tenants
+                            </a>
+                        </li>
+                        {% if current_user.role == 'admin' %}
+                        <li>
+                            <a href="{{ url_for('documents.district_report') }}" {% if request.endpoint == 'documents.district_report' %}class="active"{% endif %}>
+                                District Report
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{{ url_for('tenants.add_tenant') }}" {% if request.endpoint == 'tenants.add_tenant' %}class="active"{% endif %}>
+                                <svg class="icon-small" viewBox="0 0 24 24">
+                                    <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
+                                </svg>
+                                Add Tenant
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{{ url_for('addresses.add_address') }}" {% if request.endpoint == 'addresses.add_address' %}class="active"{% endif %}>
+                                <svg class="icon-small" viewBox="0 0 24 24">
+                                    <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
+                                </svg>
+                                Add Address
+                            </a>
+                        </li>
+                        {% endif %}
+                    </ul>
+                </div>
+                
+                <div class="navbar-user">
+                    <span class="user-info">
+                        <svg class="icon-small" viewBox="0 0 24 24">
+                            <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+                        </svg>
+                        {{ current_user.username }}
+                    </span>
+                    <div class="navbar-logout">
+                        <a href="{{ url_for('auth.logout') }}">
+                            <svg class="icon-small" viewBox="0 0 24 24">
+                                <path d="M10.09 15.59L11.5 17l5-5-5-5-1.41 1.41L12.67 11H3v2h9.67l-2.58 2.59zM19 3H5c-1.11 0-2 .9-2 2v4h2V5h14v14H5v-4H3v4c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2z"/>
+                            </svg>
+                            Logout
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
-  <table border="1">
-    <tr>
-      <th>Full Name</th>
-      <th>Passport</th>
-      <th>Phone</th>
-      <th>Registration Date</th>
-      <th>Address</th>
-      <th>Area</th>
-      <th>Rooms</th>
-      <th>Ownership Type</th>
-      <th>Certificate</th>
-    </tr>
-    {% for t in tenants %}
-    <tr>
-      <td>{{ t.full_name }}</td>
-      <td>{% if t.passport_series %}{{ t.passport_series }}{% endif %} №{{ t.passport_number }}</td>
-      <td>{{ t.phone or '-' }}</td>
-      <td>{{ t.registration_date }}</td>
-      <td>
-        St. {{ t.apartment.building.street.name }},
-        Bldg. {{ t.apartment.building.number }},
-        Apt. {{ t.apartment.number }}
-      </td>
-      <td>{{ t.apartment.area }} m²</td>
-      <td>{{ t.apartment.rooms or '-' }}</td>
-      <td>{{ t.apartment.ownership_type }}</td>
-      <td>
-        <a href="{{ url_for('documents.tenant_certificate', tenant_id=t.id) }}">📄 Certificate</a>
-      </td>      
-    </tr>
-    {% endfor %}
-  </table>
+    <div class="container">
+        <div class="header">
+            <h1>
+                Tenants List
+            </h1>
+            <p>Total tenants: {{ tenants|length }}</p>
+        </div>
+        
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Full Name</th>
+                    <th>Passport</th>
+                    <th>Phone</th>
+                    <th>Registration Date</th>
+                    <th>Address</th>
+                    <th>Area</th>
+                    <th>Rooms</th>
+                    <th>Ownership</th>
+                    <th>Certificate</th>
+                    {% if current_user.role == 'admin' %}
+                    <th>Actions</th>
+                    {% endif %}
+                </tr>
+            </thead>
+            <tbody>
+                {% for t in tenants %}
+                <tr>
+                    <td>{{ t.full_name }}</td>
+                    <td>{% if t.passport_series %}{{ t.passport_series }}{% endif %} №{{ t.passport_number }}</td>
+                    <td>{{ t.phone or '-' }}</td>
+                    <td>{{ t.registration_date }}</td>
+                    <td>
+                        {% if t.apartment and t.apartment.building and t.apartment.building.street %}
+                        {{ t.apartment.building.street.name }}, Bldg. {{ t.apartment.building.number }}, Apt. {{ t.apartment.number }}
+                        {% else %}
+                        No address
+                        {% endif %}
+                    </td>
+                    <td>{{ t.apartment.area if t.apartment else '-' }} m²</td>
+                    <td>{{ t.apartment.rooms if t.apartment else '-' }}</td>
+                    <td>{{ t.apartment.ownership_type if t.apartment else '-' }}</td>
+                    <td>
+                        {% if t.apartment %}
+                        <a href="{{ url_for('documents.tenant_certificate', tenant_id=t.id) }}" class="btn-small">
+                            <svg class="icon-small" viewBox="0 0 24 24">
+                                <path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/>
+                            </svg>
+                            PDF
+                        </a>
+                        {% else %}
+                        -
+                        {% endif %}
+                    </td>
+                    {% if current_user.role == 'admin' %}
+                    <td>
+                        <div class="action-buttons">
+                            <a href="{{ url_for('tenants.edit_tenant', tenant_id=t.id) }}" class="btn-edit">
+                                <svg class="icon-small" viewBox="0 0 24 24">
+                                    <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/>
+                                </svg>
+                                Edit
+                            </a>
+                            
+                            <form method="POST" action="{{ url_for('tenants.delete_tenant', tenant_id=t.id) }}" style="display: inline;" onsubmit="return confirm('Delete tenant {{ t.full_name }}?');">
+                                <button type="submit" class="btn-delete">
+                                    <svg class="icon-small" viewBox="0 0 24 24">
+                                        <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/>
+                                    </svg>
+                                    Delete
+                                </button>
+                            </form>
+                        </div>
+                    </td>
+                    {% endif %}
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
 </body>
 </html>

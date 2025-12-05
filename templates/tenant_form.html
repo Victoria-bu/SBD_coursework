@@ -1,42 +1,146 @@
 <!DOCTYPE html>
 <html>
-<head><title>Add Tenant</title></head>
+<head>
+    <title>{% if tenant %}Edit{% else %}Add{% endif %} Tenant</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
 <body>
-  <h2>Add Tenant</h2>
-  
-  <form method="post">
-    <h3>Personal Information:</h3>
-    Full Name: <input type="text" name="full_name" required><br>
-    Passport Series: <input type="text" name="passport_series"><br>
-    Passport Number: <input type="text" name="passport_number" required><br>
-    Phone: <input type="tel" name="phone"><br>
-    Registration Date: <input type="date" name="registration_date" required><br>
+
+  <div class="top-navbar">
+        <div class="navbar-container">
+            <div class="navbar-content">
+                <div class="navbar-brand">
+                    <svg class="icon" viewBox="0 0 24 24">
+                        <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/>
+                    </svg>
+                    Housing Management
+                </div>
+                
+                <div class="navbar-links">
+                    <ul class="navbar-nav">
+                        <li>
+                            <a href="{{ url_for('tenants.tenants_list') }}" {% if request.endpoint == 'tenants.tenants_list' %}class="active"{% endif %}>
+                                Tenants
+                            </a>
+                        </li>
+                        {% if current_user.role == 'admin' %}
+                        <li>
+                            <a href="{{ url_for('documents.district_report') }}" {% if request.endpoint == 'documents.district_report' %}class="active"{% endif %}>
+                                District Report
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{{ url_for('tenants.add_tenant') }}" {% if request.endpoint == 'tenants.add_tenant' %}class="active"{% endif %}>
+                                <svg class="icon-small" viewBox="0 0 24 24">
+                                    <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
+                                </svg>
+                                Add Tenant
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{{ url_for('addresses.add_address') }}" {% if request.endpoint == 'addresses.add_address' %}class="active"{% endif %}>
+                                <svg class="icon-small" viewBox="0 0 24 24">
+                                    <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
+                                </svg>
+                                Add Address
+                            </a>
+                        </li>
+                        {% endif %}
+                    </ul>
+                </div>
+                
+                <div class="navbar-user">
+                    <span class="user-info">
+                        <svg class="icon-small" viewBox="0 0 24 24">
+                            <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+                        </svg>
+                        {{ current_user.username }}
+                    </span>
+                    <div class="navbar-logout">
+                        <a href="{{ url_for('auth.logout') }}">
+                            <svg class="icon-small" viewBox="0 0 24 24">
+                                <path d="M10.09 15.59L11.5 17l5-5-5-5-1.41 1.41L12.67 11H3v2h9.67l-2.58 2.59zM19 3H5c-1.11 0-2 .9-2 2v4h2V5h14v14H5v-4H3v4c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2z"/>
+                            </svg>
+                            Logout
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
     
-    <h3>Address:</h3>
-    Apartment:
-    <select name="apartment_id" required>
-      <option value="">--Select Apartment--</option>
-      {% for apt in apartments %}
-      <option value="{{ apt.id }}">
-        St. {{ apt.building.street.name }}, Bldg. {{ apt.building.number }}, Apt. {{ apt.number }} ({{ apt.area }} m², {{ apt.rooms }} rooms)
-      </option>
-      {% endfor %}
-    </select><br>
-    
-    <button type="submit">Save</button>
-  </form>
-  
-  <p><a href="{{ url_for('addresses.add_address') }}">🏠 Add Address</a></p>
-  <a href="{{ url_for('tenants.tenants_list') }}">📋 Tenants</a> 
-  
-  {% with messages = get_flashed_messages() %}
-  {% if messages %}
-    <ul>
-    {% for msg in messages %}
-      <li>{{ msg }}</li>
-    {% endfor %}
-    </ul>
-  {% endif %}
-  {% endwith %}
+    <div class="form-container">
+            <h1>{% if tenant %}Edit{% else %}Add{% endif %} Tenant</h1>
+        
+        <div class="form-wrapper">
+            <form method="post">
+                <h3>Personal Information:</h3>
+                    <div class="form-group">
+                        <label>Full Name</label>
+                        <input type="text" name="full_name" placeholder="Full Name" 
+                               value="{{ tenant.full_name if tenant else '' }}" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Passport Series</label>
+                        <input type="text" name="passport_series" placeholder="Passport Series"
+                               value="{{ tenant.passport_series if tenant else '' }}">
+                    </div>
+                    <div class="form-group">
+                        <label>Passport Number</label>
+                        <input type="text" name="passport_number" placeholder="Passport Number"
+                               value="{{ tenant.passport_number if tenant else '' }}" required>
+                    </div>
+                
+                    <div class="form-group">
+                        <label>Phone</label>
+                        <input type="tel" name="phone" placeholder="Phone"
+                               value="{{ tenant.phone if tenant else '' }}">
+                    </div>
+                    <div class="form-group">
+                        <label>Registration Date</label>
+                        <input type="date" name="registration_date" 
+                               value="{{ tenant.registration_date if tenant else '' }}" required>
+                    </div>
+                
+                <h3>Address:</h3>
+                    <div class="form-group">
+                        <label>Apartment</label>
+                        <select name="apartment_id" required>
+                            <option value="">--Select Apartment--</option>
+                            {% for apt in apartments %}
+                            <option value="{{ apt.id }}" 
+                                    {% if tenant and tenant.apartment_id == apt.id %}selected{% endif %}>
+                                St. {{ apt.street_name }}, Bldg. {{ apt.building_number }}, Apt. {{ apt.apartment_number }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                
+                <div class="form-actions">
+                    <button type="submit">
+                        {% if tenant %}Update{% else %}Save{% endif %} Tenant
+                    </button>
+                    
+                    {% if tenant %}
+                    <a href="{{ url_for('tenants.tenants_list') }}" class="btn" style="background: #6c757d;">
+                        Cancel
+                    </a>
+                    {% endif %}
+                </div>
+            </form>
+            
+            {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                <div class="flash-messages">
+                    <ul>
+                    {% for msg in messages %}
+                        <li>{{ msg }}</li>
+                    {% endfor %}
+                    </ul>
+                </div>
+            {% endif %}
+            {% endwith %}
+        </div>
+    </div>
 </body>
 </html>

@@ -1,50 +1,128 @@
 <!DOCTYPE html>
 <html>
-<head><title>Add Address</title></head>
+<head><title>Add Address</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
 <body>
-  <h2>Add a New Address</h2>
-  
-  <div>
-    <a href="{{ url_for('tenants.tenants_list') }}">📋 Tenants</a> |
-    {% if current_user.role == 'admin' %}
-    <a href="{{ url_for('tenants.add_tenant') }}">➕ Add Tenant</a> |
-    <a href="{{ url_for('addresses.add_address') }}">🏠 Add Address</a> |
-    {% endif %}
-    <a href="{{ url_for('auth.logout') }}">🚪 Logout ({{ current_user.username }})</a>
+<div class="top-navbar">
+        <div class="navbar-container">
+            <div class="navbar-content">
+                <div class="navbar-brand">
+                    <svg class="icon" viewBox="0 0 24 24">
+                        <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/>
+                    </svg>
+                    Housing Management
+                </div>
+                
+                <div class="navbar-links">
+                    <ul class="navbar-nav">
+                        <li>
+                            <a href="{{ url_for('tenants.tenants_list') }}" {% if request.endpoint == 'tenants.tenants_list' %}class="active"{% endif %}>
+                                Tenants
+                            </a>
+                        </li>
+                        {% if current_user.role == 'admin' %}
+                        <li>
+                            <a href="{{ url_for('documents.district_report') }}" {% if request.endpoint == 'documents.district_report' %}class="active"{% endif %}>
+                                District Report
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{{ url_for('tenants.add_tenant') }}" {% if request.endpoint == 'tenants.add_tenant' %}class="active"{% endif %}>
+                                <svg class="icon-small" viewBox="0 0 24 24">
+                                    <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
+                                </svg>
+                                Add Tenant
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{{ url_for('addresses.add_address') }}" {% if request.endpoint == 'addresses.add_address' %}class="active"{% endif %}>
+                                <svg class="icon-small" viewBox="0 0 24 24">
+                                    <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
+                                </svg>
+                                Add Address
+                            </a>
+                        </li>
+                        {% endif %}
+                    </ul>
+                </div>
+                
+                <div class="navbar-user">
+                    <span class="user-info">
+                        <svg class="icon-small" viewBox="0 0 24 24">
+                            <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+                        </svg>
+                        {{ current_user.username }}
+                    </span>
+                    <div class="navbar-logout">
+                        <a href="{{ url_for('auth.logout') }}">
+                            <svg class="icon-small" viewBox="0 0 24 24">
+                                <path d="M10.09 15.59L11.5 17l5-5-5-5-1.41 1.41L12.67 11H3v2h9.67l-2.58 2.59zM19 3H5c-1.11 0-2 .9-2 2v4h2V5h14v14H5v-4H3v4c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2z"/>
+                            </svg>
+                            Logout
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
   </div>
   
-  <form method="post">
-    <h3>Address:</h3>
-    Street: <input type="text" name="street_name" placeholder="Street name" required><br>
-    Building Number: <input type="text" name="building_number" placeholder="Building number" required><br>
-    Apartment Number: <input type="text" name="apartment_number" placeholder="Apartment number" required><br>
-    
-    <h3>Apartment Details:</h3>
-    Area: <input type="number" name="area" step="0.01" placeholder="Area (m²)" required> m²<br>
-    Number of Rooms: <input type="number" name="rooms" placeholder="Number of rooms"><br>
-    Ownership Type:
-    <select name="ownership_type" required>
-      <option value="">--Select ownership type--</option>
-      <option value="private">Private</option>
-      <option value="municipal">Municipal</option>
-      <option value="rented">Rented</option>
-      <option value="cooperative">Cooperative</option>
-    </select><br>
-    
-    <br>
-    <button type="submit">Add Address</button>
-  </form>
-  
-  <a href="{{ url_for('tenants.add_tenant') }}">← Back to Adding Tenant</a>
-  
-  {% with messages = get_flashed_messages() %}
-  {% if messages %}
-    <ul>
-    {% for msg in messages %}
-      <li>{{ msg }}</li>
-    {% endfor %}
-    </ul>
-  {% endif %}
-  {% endwith %}
+  <div class="form-container">
+            <h1>Add a New Address</h1>
+
+        
+        <div class="form-wrapper">
+            <form method="post">
+                    <div class="form-group">
+                        <label>Street</label>
+                        <input type="text" name="street_name" placeholder="Street name" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Building Number</label>
+                        <input type="text" name="building_number" placeholder="Building number" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Apartment Number</label>
+                        <input type="text" name="apartment_number" placeholder="Apartment number" required>
+                    </div>
+                
+                <h3>Apartment Details:</h3>
+                    <div class="form-group">
+                        <label>Area</label>
+                        <input type="number" name="area" step="0.01" placeholder="Area (m²)" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Number of Rooms</label>
+                        <input type="number" name="rooms" placeholder="Number of rooms">
+                    </div>
+                    <div class="form-group">
+                        <label>Ownership Type</label>
+                        <select name="ownership_type" required>
+                            <option value="">--Select ownership type--</option>
+                            <option value="private">Private</option>
+                            <option value="municipal">Municipal</option>
+                            <option value="rented">Rented</option>
+                            <option value="cooperative">Cooperative</option>
+                        </select>
+                    </div>
+                
+                <div class="form-actions">
+                    <button type="submit">Add Address</button>
+                </div>
+            </form>
+            
+            {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                <div class="flash-messages">
+                    <ul>
+                    {% for msg in messages %}
+                        <li>{{ msg }}</li>
+                    {% endfor %}
+                    </ul>
+                </div>
+            {% endif %}
+            {% endwith %}
+        </div>
+    </div>
 </body>
 </html>

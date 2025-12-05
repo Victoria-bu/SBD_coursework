@@ -1,38 +1,60 @@
 <!DOCTYPE html>
 <html>
-<head><title>Registration</title></head>
+<head>
+    <title>Registration</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
 <body>
-  <h2>Registration</h2>
-  <form method="post">
-    <h3>Login information:</h3>
-    <input type="text" name="username" placeholder="Username" required><br>
-    <input type="password" name="password" placeholder="Password" required><br>
-    
-    <h3>Your tenant information:</h3>
-    <input type="text" name="full_name" placeholder="Full Name (as in the database)" required><br>
-    <small>Enter exactly as recorded in the system</small><br><br>
-    
-    <!-- Тільки адміни можуть вибирати роль -->
-    {% if current_user.is_authenticated and current_user.role == 'admin' %}
-    <select name="role">
-      <option value="user">User</option>
-      <option value="admin">Administrator</option>
-    </select><br>
-    {% else %}
-    <input type="hidden" name="role" value="user">
-    {% endif %}
-    
-    <button type="submit">Register</button>
-  </form>
-  <p>Already have an account? <a href="{{ url_for('auth.login') }}">Login</a></p>
-  {% with messages = get_flashed_messages() %}
-  {% if messages %}
-    <ul>
-    {% for msg in messages %}
-      <li>{{ msg }}</li>
-    {% endfor %}
-    </ul>
-  {% endif %}
-  {% endwith %}
+    <div class="auth-form-container">
+        <div class="auth-form">
+            <h2>Registration</h2>
+            <form method="post">
+                <h3>Login information:</h3>
+                <div class="form-group">
+                    <input type="text" name="username" placeholder="Username" required>
+                </div>
+                <div class="form-group">
+                    <input type="password" name="password" placeholder="Password" required>
+                </div>
+                
+                <h3>Your tenant information:</h3>
+                <div class="form-group">
+                    <input type="text" name="full_name" placeholder="Full Name (as in the database)" required>
+                    <small>Enter exactly as recorded in the system</small>
+                </div>
+                
+                <!-- Тільки адміни можуть вибирати роль -->
+                {% if current_user.is_authenticated and current_user.role == 'admin' %}
+                <div class="form-group">
+                    <select name="role">
+                        <option value="user">User</option>
+                        <option value="admin">Administrator</option>
+                    </select>
+                </div>
+                {% else %}
+                <input type="hidden" name="role" value="user">
+                {% endif %}
+                
+                <div class="form-actions">
+                    <button type="submit">Register</button>
+                </div>
+            </form>
+            <div class="form-footer">
+                <p>Already have an account? <a href="{{ url_for('auth.login') }}">Login</a></p>
+            </div>
+            
+            {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                <div class="flash-messages">
+                    <ul>
+                    {% for msg in messages %}
+                        <li>{{ msg }}</li>
+                    {% endfor %}
+                    </ul>
+                </div>
+            {% endif %}
+            {% endwith %}
+        </div>
+    </div>
 </body>
 </html>
