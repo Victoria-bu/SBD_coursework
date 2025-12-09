@@ -17,7 +17,7 @@ def generate_tenant_certificate(tenant):
         parent=styles['Heading1'],
         fontSize=16,
         spaceAfter=30,
-        alignment=1  # center
+        alignment=1  
     )
     elements.append(Paragraph('HOUSING CERTIFICATE', title_style))
     elements.append(Spacer(1, 20))
@@ -25,7 +25,7 @@ def generate_tenant_certificate(tenant):
     # Tenant data
     data = [
         ['Full Name:', tenant.full_name],
-        ['Passport:', f"{tenant.passport_series or ''} №{tenant.passport_number}"],
+        ['Passport:', f"{tenant.passport_series or ''} {tenant.passport_number}"],
         ['Address:', f"st. {tenant.apartment.building.street.name}, bld. {tenant.apartment.building.number}, apt. {tenant.apartment.number}"],
         ['Area:', f"{tenant.apartment.area} m²"],
         ['Number of Rooms:', str(tenant.apartment.rooms)],

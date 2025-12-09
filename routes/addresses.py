@@ -2,7 +2,7 @@ from flask import Blueprint, render_template, request, redirect, url_for, flash
 from flask_login import login_required, current_user
 from models import db, Street, Building, Apartment
 
-address_bp = Blueprint('addresses', __name__)
+address_bp = Blueprint('addresses', __name__, url_prefix='/addresses')
 
 
 @address_bp.route('/address/add', methods=['GET', 'POST'])

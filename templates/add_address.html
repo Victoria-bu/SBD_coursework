@@ -68,61 +68,62 @@
   </div>
   
   <div class="form-container">
-            <h1>Add a New Address</h1>
+    <h1>Add a New Address</h1>
 
-        
-        <div class="form-wrapper">
-            <form method="post">
-                    <div class="form-group">
-                        <label>Street</label>
-                        <input type="text" name="street_name" placeholder="Street name" required>
-                    </div>
-                    <div class="form-group">
-                        <label>Building Number</label>
-                        <input type="text" name="building_number" placeholder="Building number" required>
-                    </div>
-                    <div class="form-group">
-                        <label>Apartment Number</label>
-                        <input type="text" name="apartment_number" placeholder="Apartment number" required>
-                    </div>
-                
-                <h3>Apartment Details:</h3>
-                    <div class="form-group">
-                        <label>Area</label>
-                        <input type="number" name="area" step="0.01" placeholder="Area (m²)" required>
-                    </div>
-                    <div class="form-group">
-                        <label>Number of Rooms</label>
-                        <input type="number" name="rooms" placeholder="Number of rooms">
-                    </div>
-                    <div class="form-group">
-                        <label>Ownership Type</label>
-                        <select name="ownership_type" required>
-                            <option value="">--Select ownership type--</option>
-                            <option value="private">Private</option>
-                            <option value="municipal">Municipal</option>
-                            <option value="rented">Rented</option>
-                            <option value="cooperative">Cooperative</option>
-                        </select>
-                    </div>
-                
-                <div class="form-actions">
-                    <button type="submit">Add Address</button>
-                </div>
-            </form>
-            
-            {% with messages = get_flashed_messages() %}
-            {% if messages %}
-                <div class="flash-messages">
-                    <ul>
-                    {% for msg in messages %}
-                        <li>{{ msg }}</li>
-                    {% endfor %}
-                    </ul>
-                </div>
-            {% endif %}
-            {% endwith %}
-        </div>
+    <div class="form-wrapper">
+        <form method="post">
+
+            <div class="form-group">
+                <label>Street</label>
+                <input type="text" name="street_name" placeholder="Street name" required>
+            </div>
+
+            <div class="form-group">
+                <label>Building Number</label>
+                <input type="text" name="building_number" placeholder="Building number" required>
+            </div>
+
+            <div class="form-group">
+                <label>Apartment Number</label>
+                <input type="text" name="apartment_number" placeholder="Apartment number" required>
+            </div>
+
+            <h3>Apartment Details:</h3>
+
+            <div class="form-group">
+                <label>Area (m²)</label>
+                <input type="number" 
+                       name="area" 
+                       step="0.01" 
+                       placeholder="Area" 
+                       min="0" 
+                       required>
+            </div>
+
+            <div class="form-group">
+                <label>Number of Rooms</label>
+                <input type="number" 
+                       name="rooms" 
+                       placeholder="Number of rooms" 
+                       min="0">
+            </div>
+
+            <div class="form-group">
+                <label>Ownership Type</label>
+                <select name="ownership_type" required>
+                    <option value="">--Select ownership type--</option>
+                    <option value="private">Private</option>
+                    <option value="municipal">Municipal</option>
+                    <option value="rented">Rented</option>
+                    <option value="cooperative">Cooperative</option>
+                </select>
+            </div>
+
+            <div class="form-actions">
+                <button type="submit">Add Address</button>
+            </div>
+        </form>
     </div>
+</div>
 </body>
 </html>

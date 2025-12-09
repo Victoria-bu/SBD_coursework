@@ -2,9 +2,6 @@ import couchdb
 from config import Config
 from datetime import datetime
 
-COUCHDB_URL = "http://admin:28102005@localhost:5984/"
-DB_NAME = "certificates"
-
 class CouchDBClient:
     def __init__(self):
         self.server = couchdb.Server(Config.COUCHDB_URL)
@@ -15,7 +12,7 @@ class CouchDBClient:
 
     def save_certificate(self, tenant_id, pdf_bytes):
 
-        # 1. Створюємо запис у CouchDB
+        # Створюємо запис у CouchDB
         doc = {
             "tenant_id": tenant_id,
             "created_at": datetime.now().isoformat(),
@@ -24,10 +21,10 @@ class CouchDBClient:
 
         doc_id, doc_rev = self.db.save(doc)
 
-        # 2. Отримуємо документ з БД
+        # Отримуємо документ з БД
         stored_doc = self.db[doc_id]
 
-        # 3. Додаємо PDF як вкладення
+        # Додаємо PDF як вкладення
         self.db.put_attachment(
             stored_doc,
             content=pdf_bytes,
@@ -36,3 +33,24 @@ class CouchDBClient:
         )
 
         return doc_id
+
+    def save_district_report(self, street_id, pdf_bytes):
+        doc = {
+            "street_id": street_id,
+            "created_at": datetime.now().isoformat(),
+            "type": "district_report"
+        }
+    
+        doc_id, doc_rev = self.db.save(doc)
+    
+        stored_doc = self.db[doc_id]
+    
+        self.db.put_attachment(
+            stored_doc,
+            content=pdf_bytes,
+            filename=f"district_report_{street_id}.pdf",
+            content_type="application/pdf"
+        )
+    
+        return doc_id
+
