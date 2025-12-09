@@ -1,11 +1,14 @@
 from flask import Blueprint, render_template, flash, redirect, url_for, make_response, request
+from flask import send_file, abort
+from io import BytesIO
 from flask_login import login_required, current_user
 from models import db, Tenant, Apartment, Building, Street
 from couchdb_client import CouchDBClient
 from services.pdf_service import generate_tenant_certificate
 from sqlalchemy import func
+from services.district_service import generate_district_report_pdf
 
-documents_bp = Blueprint('documents', __name__)
+documents_bp = Blueprint('documents', __name__, url_prefix='/reports')
 
 @documents_bp.route('/tenant/<int:tenant_id>/certificate')
 @login_required
@@ -121,12 +124,12 @@ def district_report():
             for apartment in apartments:
                 tenants = Tenant.query.filter_by(apartment_id=apartment.id).all()
                 
-                apartment_status = "Occupied" if apartment.is_occupied else "Vacant"
-                
+                apartment_status = "Occupied" if len(tenants) > 0 else "Vacant"
+
                 building_info['apartments'].append({
                     'apartment': apartment,
                     'tenants': tenants,
-                    'is_occupied': apartment.is_occupied,
+                    'is_occupied': len(tenants) > 0,
                     'status': apartment_status
                 })
                 street_info['total_tenants'] += len(tenants)
@@ -136,3 +139,27 @@ def district_report():
         result.append(street_info)
 
     return render_template("district_report.html", streets_data=result, sort_by=sort_by)
+
+from services.district_service import generate_district_report_pdf
+
+@documents_bp.route("/report/all")
+@login_required
+def download_all_reports():
+    if not current_user.is_admin():
+        abort(403)
+
+    streets = Street.query.order_by(Street.name).all()
+
+    pdf_bytes = generate_district_report_pdf(streets)
+
+    return send_file(
+        BytesIO(pdf_bytes),
+        mimetype="application/pdf",
+        as_attachment=True,
+        download_name="district_report.pdf"
+    )
+
+@documents_bp.route('/report/all')
+def report_all():
+    pdf_content = b"%PDF TEST FILE"
+    return pdf_content, 200, {"Content-Type": "application/pdf"}

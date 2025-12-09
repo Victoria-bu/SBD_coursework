@@ -281,6 +281,15 @@
                 District Report
             </h1>
 
+{% if current_user.is_authenticated and current_user.is_admin() %}
+<a href="{{ url_for('documents.download_all_reports') }}"
+   class="btn btn-primary">
+   Download a report for all streets in the district
+</a>
+{% endif %}
+
+
+
         <!-- панель управління -->
         <div class="control-panel" style="padding: 12px 15px;">
             <div style="display: flex; align-items: center; gap: 20px; flex-wrap: wrap;">
@@ -448,5 +457,6 @@
             </div>
         </div>
     </div>
+
 </body>
 </html>

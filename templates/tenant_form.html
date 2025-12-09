@@ -106,14 +106,17 @@
                     <div class="form-group">
                         <label>Apartment</label>
                         <select name="apartment_id" required>
-                            <option value="">--Select Apartment--</option>
+                            <option value="">-- Select apartment --</option>
+                        
                             {% for apt in apartments %}
-                            <option value="{{ apt.id }}" 
-                                    {% if tenant and tenant.apartment_id == apt.id %}selected{% endif %}>
-                                St. {{ apt.street_name }}, Bldg. {{ apt.building_number }}, Apt. {{ apt.apartment_number }}
-                            </option>
+                                <option value="{{ apt.id }}">
+                                    {{ apt.building.street.name }},
+                                    буд. №{{ apt.building.number }},
+                                    кв. №{{ apt.number }}
+                                </option>
                             {% endfor %}
                         </select>
+                        
                     </div>
                 
                 <div class="form-actions">
